@@ -6,3 +6,5 @@ services:
       ./docker
     volumes:
       - ./:/var/www/html
+    ports:
+      - "8080:80"
