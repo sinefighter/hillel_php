@@ -51,6 +51,10 @@ class Todo {
 	public function get_tasks() : void {
 		$todo_list = $this -> get_array_from_file();
 
+		if(empty($todo_list)) {
+			throw new Exception('No tasks in file');
+		}
+
 		usort($todo_list, function($a, $b) : int {
 			$priorityValues = [
 				'High' => 3,
@@ -93,6 +97,30 @@ class Todo {
 	 */
 	public function complete_task(int $task_id) : void {
 		$this -> edit_task($task_id, 'complete');
+	}
+
+	/**
+	 * Create json-file from array
+	 * 
+	 * @param mixed string
+	 * 
+	 * @return void
+	 */
+	public function create_json_file(string $json_path = __DIR__ . '/list.json') : void {
+		if (pathinfo($json_path, PATHINFO_EXTENSION) !== 'json') {
+			throw new Exception('Invalid file extension. File must have a .json extension.');
+		}
+		
+		$todo_list = $this -> get_array_from_file();
+		$json = json_encode($todo_list);
+		$json_stream = fopen($json_path, 'w+');
+		if($json_stream) {
+			fwrite($json_stream, $json);
+			echo "JSON-файл успішно створено. Шлях: $json_path \n";
+		}else{
+			throw new Exception('Cannot open json file');
+		}
+		fclose($json_stream);
 	}
 
 	/**
