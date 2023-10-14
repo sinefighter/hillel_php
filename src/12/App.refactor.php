@@ -1,5 +1,6 @@
 <?php
-class App { //відкриваюча скобка повинна знаходитись на окремому рядку
+class App 
+{ //відкриваюча скобка повинна знаходитись на окремому рядку
 	private $todo;
 
 	/**
@@ -12,7 +13,7 @@ class App { //відкриваюча скобка повинна знаходи�
 	/**
 	 * @return void
 	 */
-	public function run() : void { //двокрапка не повинна містити пробіл перед нею
+	public function run(): void {
         echo "Оберіть, що ви хочете зробити:\n";
         echo "1. Отримати список завдань\n";
         echo "2. Додати нове завдання\n";
@@ -23,32 +24,27 @@ class App { //відкриваюча скобка повинна знаходи�
         $input = fgets(STDIN);
         $input = (int)trim($input);
 
-		//try-catch не повинен бути в класі
-        try {
-            match ($input) {
-                1 => $this->get_tasks(),
-                2 => $this->add_task(),
-                3 => $this->complete_task(),
-                4 => $this->delete_task(),
-                5 => $this->create_json_file(),
-                default => $this->invalid_input($input, 'run')
-            };
-        } catch (Exception $e) {
-            echo 'Сталася помилка: ' . $e->getMessage() . PHP_EOL;
-        }
+		match ($input) {
+			1 => $this->getTasks(),
+			2 => $this->addTask(),
+			3 => $this->completeTask(),
+			4 => $this->deleteTask(),
+			5 => $this->createJsonFile(),
+			default => $this->invalidInput($input, 'run')
+		};
     }
 
 	/**
 	 * @return void
 	 */
-	private function get_tasks() : void { //назва методів повинна бути в кемелКейс (тут і надалі)
-        $this->todo->get_tasks();
+	private function getTasks(): void { //назва методів повинна бути в кемелКейс (тут і надалі)
+        $this->todo->getTasks();
     }
 
     /**
      * @return void
      */
-    private function add_task() : void {
+    private function addTask(): void {
         echo "Введіть завдання:\n";
         $task_text = fgets(STDIN);
         $task_text = trim($task_text);
@@ -62,47 +58,47 @@ class App { //відкриваюча скобка повинна знаходи�
         $task_priority = (int)trim($task_priority);
 
         match ($task_priority) {
-            1 => $this->todo->add_task($task_text, Priority::HIGH),
-            2 => $this->todo->add_task($task_text, Priority::MEDIUM),
-            3 => $this->todo->add_task($task_text, Priority::LOW),
-            default => $this->invalid_input($task_priority, 'add_task')
+            1 => $this->todo->addTask($task_text, Priority::HIGH),
+            2 => $this->todo->addTask($task_text, Priority::MEDIUM),
+            3 => $this->todo->addTask($task_text, Priority::LOW),
+            default => $this->invalidInput($task_priority, 'addTask')
         };
     }
 
     /**
      * @return void
      */
-    private function complete_task() : void {
+    private function completeTask(): void {
         echo "Введіть номер завдання:\n";
         $input = fgets(STDIN);
         $input = (int)trim($input);
 
-        $this->todo->complete_task($input);
+        $this->todo->completeTask($input);
     }
 
     /**
      * @return void
      */
-    private function delete_task() : void {
+    private function deleteTask(): void {
         echo "Введіть номер завдання для видалення:\n";
         $input = fgets(STDIN);
         $input = (int)trim($input);
 
-        $this->todo->delete_task($input);
+        $this->todo->deleteTask($input);
     }
 
     /**
      * @return void
      */
-    private function create_json_file() : void {
+    private function createJsonFile(): void {
         echo "Введіть назву файлу з розширенням .json:\n";
         $input = fgets(STDIN);
         $input = trim($input);
 
         if ($input) {
-            $this->todo->create_json_file($input);
+            $this->todo->createJsonFile($input);
         } else {
-            $this->todo->create_json_file();
+            $this->todo->createJsonFile();
         }
     }
 
@@ -112,8 +108,8 @@ class App { //відкриваюча скобка повинна знаходи�
      * 
      * @return void
      */
-    private function invalid_input(int $input, string $function) : void {
+    private function invalidInput(int $input, string $function): void {
         echo "Дії під номером $input не існує. Спробуйте заново.\n";
-		$this -> $function(); //стрілочка повинна бути без пробілов
+		$this->$function();
     }
 }

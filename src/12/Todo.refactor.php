@@ -1,7 +1,8 @@
 <?php
 
 
-class Todo { //відкриваюча скобка повинна знаходитись на окремому рядку
+class Todo 
+{
 
 	private $file;
 
@@ -11,7 +12,7 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * @param string $file_path
 	 */
 	public function __construct (string $file_path) {
-		if(!$this -> open_file($file_path)) {
+		if (!$this->openFile($file_path)) {
 			throw new Exception('Cannot open file');
 		}
 	}
@@ -25,23 +26,20 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * @return void
 	 */
 
-	//двокрапка не повинна містити пробіл перед нею
-	//назва методів повинна бути в кемелКейс (тут і надалі)
-	public function add_task(string $task, Priority $priority) : void { 
-		$todo_list = $this -> get_array_from_file();
+	public function addTask(string $task, Priority $priority): void { 
+		$todo_list = $this->getArrayFromFile();
 
-		//повинен бути пробіл після if
-		if($todo_list) {
+		if ($todo_list) {
 			$task_id = (int) $todo_list[count($todo_list) - 1][0] + 1;
-		}else{ //повинен бути пробіл до і після else
+		} else {
 			$task_id = 1;
 		}
 
-		$this -> save_to_file([ //не повинно бути пробілу
+		$this->saveToFile([
 			$task_id, 
 			$task, 
-			$priority -> value, 
-			Status::NOT_COMPLETE -> value
+			$priority->value, 
+			Status::NOT_COMPLETE->value
 		]);
 
 		echo "Завдання #$task_id додано успішно." . PHP_EOL;
@@ -52,14 +50,14 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return void
 	 */
-	public function get_tasks() : void {
-		$todo_list = $this -> get_array_from_file();
+	public function getTasks(): void {
+		$todo_list = $this->getArrayFromFile();
 
-		if(empty($todo_list)) {
+		if (empty($todo_list)) {
 			throw new Exception('No tasks in file');
 		}
 
-		usort($todo_list, function($a, $b) : int {
+		usort($todo_list, function($a, $b): int {
 			$priorityValues = [
 				'High' => 3,
 				'Medium' => 2,
@@ -74,7 +72,7 @@ class Todo { //відкриваюча скобка повинна знаходи
 
 		$output = '';
 
-		foreach($todo_list as $item) { // повинен бути пробіл після foreach
+		foreach ($todo_list as $item) {
 			$output .= "{$item[0]} | {$item[1]} | {$item[2]} | {$item[3]}" . PHP_EOL;
 		}
 
@@ -88,8 +86,8 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return void
 	 */
-	public function delete_task(int $task_id) : void {
-		$this -> edit_task($task_id, 'delete');
+	public function deleteTask(int $task_id): void {
+		$this->editTask($task_id, 'delete');
 	}
 
 	/**
@@ -99,8 +97,8 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return void
 	 */
-	public function complete_task(int $task_id) : void {
-		$this -> edit_task($task_id, 'complete');
+	public function completeTask(int $task_id): void {
+		$this->editTask($task_id, 'complete');
 	}
 
 	/**
@@ -110,18 +108,18 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return void
 	 */
-	public function create_json_file(string $json_path = __DIR__ . '/list.json') : void {
+	public function createJsonFile(string $json_path = __DIR__ . '/list.json'): void {
 		if (pathinfo($json_path, PATHINFO_EXTENSION) !== 'json') {
 			throw new Exception('Invalid file extension. File must have a .json extension.');
 		}
 		
-		$todo_list = $this -> get_array_from_file();
+		$todo_list = $this->getArrayFromFile();
 		$json = json_encode($todo_list);
 		$json_stream = fopen($json_path, 'w+');
-		if($json_stream) {
+		if ($json_stream) {
 			fwrite($json_stream, $json);
 			echo "JSON-файл успішно створено. Шлях: $json_path \n";
-		}else{
+		} else {
 			throw new Exception('Cannot open json file');
 		}
 		fclose($json_stream);
@@ -135,16 +133,16 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return void
 	 */
-	private function edit_task(int $task_id, string $action) : void {
-		$todo_list = $this -> get_array_from_file();
+	private function editTask(int $task_id, string $action): void {
+		$todo_list = $this->getArrayFromFile();
 		$check_id = false;
 
-		foreach($todo_list as $key => &$item) {
-			if((int) $item[0] === $task_id) {
-				if($action === 'delete') {
+		foreach ($todo_list as $key => &$item) {
+			if ((int) $item[0] === $task_id) {
+				if ($action === 'delete') {
 					array_splice($todo_list, $key, 1);
 					echo "Завдання #$task_id успішно видалено" . PHP_EOL;
-				}elseif($action === 'complete') {
+				}elseif ($action === 'complete') {
 					$item[3] = 'Complete';
 					echo "Новий статус завдання $task_id: Complete." . PHP_EOL;
 				}
@@ -153,10 +151,10 @@ class Todo { //відкриваюча скобка повинна знаходи
 			}
 		}
 
-		if(!$check_id) {
+		if (!$check_id) {
 			throw new Exception('Task not found.');
 		}
-		$this -> save_to_file($todo_list);
+		$this->saveToFile($todo_list);
 	}
 
 	/**
@@ -166,9 +164,9 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return [type]
 	 */
-	private function open_file(string $file_path) {
-		$this -> file = fopen($file_path, 'a+');
-		return $this -> file;
+	private function openFile(string $file_path) {
+		$this->file = fopen($file_path, 'a+');
+		return $this->file;
 	}
 
 	/**
@@ -176,15 +174,15 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return array
 	 */
-	private function get_array_from_file() : array {
-		$file_stream = $this -> file;
+	private function getArrayFromFile(): array {
+		$file_stream = $this->file;
 		rewind($file_stream);
 
 		$todo_list = [];
 
 		while (!feof($file_stream)) {
 			$line = fgets($file_stream);
-			if($line){
+			if ($line){
 				$line_parts = explode('|', $line);
 				$line_parts = array_map('trim', $line_parts);
 				$todo_list[] = $line_parts;
@@ -200,20 +198,20 @@ class Todo { //відкриваюча скобка повинна знаходи
 	 * 
 	 * @return void
 	 */
-	private function save_to_file(array $to_save) : void {
-		$file_stream = $this -> file;
+	private function saveToFile(array $to_save): void {
+		$file_stream = $this->file;
 
-		if(is_array($to_save[0])) {
+		if (is_array($to_save[0])) {
 			ftruncate($file_stream, 0);
-			foreach($to_save as $line) {
+			foreach ($to_save as $line) {
 				fwrite($file_stream, implode("|", $line) . "\n");
 			}
-		}else{
+		} else {
 			fwrite($file_stream, implode("|", $to_save) . "\n");
 		}
 	}
 
 	function __destruct () {
-		fclose($this -> file);
+		fclose($this->file);
 	}
 }
